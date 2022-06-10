@@ -1,0 +1,161 @@
+version: '3'
+
+services:
+
+ config_server_master:
+  build:
+   context: ./Config_Servers/Config_Server_Master
+   dockerfile: Dockerfile_Config_Server_Master 
+  image: config_server_master_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_cfg_server/SHARED_DIR
+  ports:
+    - "${MONGO_CONFIG_SERVER_MASTER_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  restart: always
+
+ config_server_slave1:
+  build:
+   context: ./Config_Servers/Config_Server_Slave1
+   dockerfile: Dockerfile_Config_Server_Slave1 
+  image: config_server_slave1_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_cfg_server/SHARED_DIR
+  ports:
+    - "${MONGO_CONFIG_SERVER_SLAVE1_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - config_server_master
+  restart: always
+    
+ config_server_slave2:
+  build:
+   context: ./Config_Servers/Config_Server_Slave2
+   dockerfile: Dockerfile_Config_Server_Slave2 
+  image: config_server_slave2_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_cfg_server/SHARED_DIR
+  ports:
+    - "${MONGO_CONFIG_SERVER_SLAVE2_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - config_server_slave1
+  restart: always
+  
+ shard1_server_master:
+  build:
+   context: ./Shard1_Servers/Shard1_Server_Master
+   dockerfile: Dockerfile_Shard1_Server_Master 
+  image: shard1_server_saster_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_shard1_server/SHARED_DIR
+  ports:
+    - "${MONGO_SHARD1_SERVER_MASTER_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - config_server_slave2
+  restart: always
+    
+ shard1_server_slave1:
+  build:
+   context: ./Shard1_Servers/Shard1_Server_Slave1
+   dockerfile: Dockerfile_Shard1_Server_Slave1 
+  image: shard1_server_slave1_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_shard1_server/SHARED_DIR
+  ports:
+    - "${MONGO_SHARD1_SERVER_SLAVE1_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - shard1_server_master
+  restart: always
+    
+ shard1_server_slave2:
+  build:
+   context: ./Shard1_Servers/Shard1_Server_Slave2
+   dockerfile: Dockerfile_Shard1_Server_Slave2 
+  image: shard1_server_slave2_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_shard1_server/SHARED_DIR
+  ports:
+    - "${MONGO_SHARD1_SERVER_SLAVE2_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - shard1_server_slave1
+  restart: always
+    
+ shard2_server_master:
+  build:
+   context: ./Shard2_Servers/Shard2_Server_Master
+   dockerfile: Dockerfile_Shard2_Server_Master 
+  image: shard2_server_saster_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_shard2_server/SHARED_DIR
+  ports:
+    - "${MONGO_SHARD2_SERVER_MASTER_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - shard1_server_slave2
+  restart: always
+    
+ shard2_server_slave1:
+  build:
+   context: ./Shard2_Servers/Shard2_Server_Slave1
+   dockerfile: Dockerfile_Shard2_Server_Slave1 
+  image: shard2_server_slave1_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_shard2_server/SHARED_DIR
+  ports:
+    - "${MONGO_SHARD2_SERVER_SLAVE1_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - shard2_server_master
+  restart: always
+
+ shard2_server_slave2:
+  build:
+   context: ./Shard2_Servers/Shard2_Server_Slave2
+   dockerfile: Dockerfile_Shard2_Server_Slave2 
+  image: shard2_server_slave2_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_shard2_server/SHARED_DIR
+  ports:
+    - "${MONGO_SHARD2_SERVER_SLAVE2_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - shard2_server_slave1
+  restart: always
+
+ router_server:
+  build:
+   context: ./Router_Server
+   dockerfile: Dockerfile_Router_Server 
+  image: router_server_image:v.0.0.1
+  volumes:
+   - ./SHARE_WITH_ALL_DOCKER_CONTAINERS:/mongo_router_server/SHARED_DIR
+  ports:
+    - "${MONGO_ROUTER_SERVER_PORT}:27017"
+# Only for testing on local computer
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    - shard2_server_slave2
+  restart: always

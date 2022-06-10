@@ -1,0 +1,14 @@
+FROM ubuntu:20.04
+WORKDIR /mongo_shard2_server
+RUN mkdir -p /mongo_shard2_server/SHARED_DIR
+RUN  apt-get update \
+  && apt-get install -y wget
+COPY ./install_mongodb.sh /mongo_shard2_server
+COPY ./auth_keyfile_for_cluster.key /mongo_shard2_server
+RUN /mongo_shard2_server/install_mongodb.sh
+COPY ./bash_script_Shard2_Server_Slave1_CONFIG.sh /mongo_shard2_server
+COPY ./bash_script_Shard2_Server_Slave1_CMD.sh /mongo_shard2_server
+COPY ./rootCA.pem /etc/ssl
+COPY ./mongodb.pem /etc/ssl
+RUN /mongo_shard2_server/bash_script_Shard2_Server_Slave1_CONFIG.sh
+CMD /mongo_shard2_server/bash_script_Shard2_Server_Slave1_CMD.sh

@@ -1,0 +1,16 @@
+FROM ubuntu:20.04
+WORKDIR /mongo_router_server
+RUN mkdir -p /mongo_router_server/SHARED_DIR
+RUN  apt-get update \
+  && apt-get install -y wget
+COPY ./install_mongodb.sh /mongo_router_server
+COPY ./auth_keyfile_for_cluster.key /mongo_router_server
+RUN /mongo_router_server/install_mongodb.sh
+COPY ./test_data.js /mongo_router_server
+COPY ./create_users.js /mongo_router_server
+COPY ./bash_script_Router_Server_CMD.sh /mongo_router_server
+COPY ./bash_script_Router_Server_CONFIG.sh /mongo_router_server
+COPY ./rootCA.pem /etc/ssl
+COPY ./mongodb.pem /etc/ssl
+RUN /mongo_router_server/bash_script_Router_Server_CONFIG.sh
+CMD /mongo_router_server/bash_script_Router_Server_CMD.sh
