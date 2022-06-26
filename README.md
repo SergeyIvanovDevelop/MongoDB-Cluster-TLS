@@ -49,5 +49,9 @@ If you manage to enter the `MongoDB` command line, then everything is done corre
 
 _`Mongodb` logs from `Docker` containers can be viewed in the shared folder [SHARE_WITH_ALL_DOCKER_CONTAINERS](./SHARE_WITH_ALL_DOCKER_CONTAINERS)_.
 
+
+_Note: Since this project is a demo, it was decided to put the test generated private keys in the github repository as well (of course, you can’t upload non-test keys) to visualize the whole picture to the person who will use this project for their personal developments_
+
+
 ### :bookmark_tabs: Licence ###
 MongoDB-Cluster-TLS is [CC BY-NC-SA 3.0 licensed](./LICENSE).
